@@ -1,0 +1,38 @@
+{
+  "name": "drd-plus/api",
+  "license": "MIT",
+  "type": "project",
+  "description": "Values calculated by Drd+ libraries accessible via REST API",
+  "keywords": [
+    "drd",
+    "drdplus",
+    "plus",
+    "api",
+    "rest",
+    "json"
+  ],
+  "autoload": {
+    "psr-4": {
+      "DrdPlus\\": "DrdPlus/"
+    }
+  },
+  "require": {
+    "php": ">=7.0",
+    "roave/security-advisories": "dev-master",
+    "granam/strict-object": "dev-master",
+    "swagger-api/swagger-ui": "^3.0",
+    "drd/dice-rolls": "dev-master"
+  },
+  "require-dev": {
+    "phpunit/phpunit": "~6.0",
+    "mockery/mockery": "~0.9",
+    "granam/exceptions-hierarchy": "~4.0"
+  },
+  "minimum-stability": "dev",
+  "prefer-stable": true,
+  "scripts": {
+    "post-autoload-dump": [
+      "cp --archive --recursive 'vendor/swagger-api/swagger-ui/dist/.' 'docs/'"
+    ]
+  }
+}

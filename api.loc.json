@@ -1,0 +1,482 @@
+{
+  "swagger": "3.0",
+  "info": {
+    "version": "1.0",
+    "title": "Drd+ API",
+    "description": "Raw values and calculations for [DrD+](http://drplus.info)\n",
+    "contact": {
+      "name": "Jaroslav Týc",
+      "url": "https://www.jaroslavtyc.com",
+      "email": "mail@jaroslavtyc.com"
+    },
+    "termsOfService": "https://www.drdplus.info/podminky"
+  },
+  "host": "api.loc",
+  "basePath": "/",
+  "schemes": [
+    "http"
+  ],
+  "produces": [
+    "application/json"
+  ],
+  "consumes": [
+    "application/x-www-form-urlencoded"
+  ],
+  "responses": {
+    "general-error": {
+      "description": "General, closely unspecified error",
+      "schema": {
+        "$ref": "#/definitions/general-error"
+      }
+    }
+  },
+  "paths": {
+    "/dice-rolls/{rollType}": {
+      "get": {
+        "summary": "Rolls by a dice(s) of your choice",
+        "parameters": [
+          {
+            "in": "query",
+            "name": "rollType",
+            "type": "array",
+            "description": "one or more comma separated rolls like 1D6,2D6+",
+            "required": true,
+            "allowEmptyValue": false
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK and result of roll by given dices",
+            "schema": {
+              "$ref": "#/objects/dice-roll"
+            }
+          },
+          "400": {
+            "$ref": "#/responses/general-error"
+          }
+        }
+      }
+    }
+  },
+  "definitions": {
+    "general-error": {
+      "type": "object",
+      "required": [
+        "error_code",
+        "error_message"
+      ],
+      "properties": {
+        "error_code": {
+          "type": "integer",
+          "description": "error code to translate, see other"
+        },
+        "error_message": {
+          "type": "string",
+          "description": "message to show to user or swallow, depends on error_code"
+        }
+      }
+    },
+    "icon": {
+      "type": "object",
+      "required": [
+        "from",
+        "to"
+      ],
+      "properties": {
+        "from": {
+          "type": "boolean",
+          "default": false
+        },
+        "to": {
+          "type": "boolean",
+          "default": false
+        }
+      }
+    },
+    "dynamicProperty": {
+      "type": "object",
+      "required": [
+        "definitionId",
+        "value"
+      ],
+      "properties": {
+        "definitionId": {
+          "type": "string"
+        },
+        "value": {
+          "type": "string"
+        }
+      }
+    },
+    "picture": {
+      "type": "object",
+      "required": [
+        "url",
+        "bgColor"
+      ],
+      "properties": {
+        "url": {
+          "type": "string"
+        },
+        "bgColor": {
+          "type": "string"
+        }
+      }
+    },
+    "basicProfile": {
+      "type": "object",
+      "required": [
+        "login",
+        "id",
+        "nadpis",
+        "picture",
+        "misto",
+        "vek",
+        "vyska",
+        "vaha",
+        "vzdalenost",
+        "status",
+        "icon_message",
+        "icon_visited",
+        "icon_plus",
+        "certifikovan",
+        "partnerId"
+      ],
+      "properties": {
+        "login": {
+          "type": "string"
+        },
+        "id": {
+          "type": "integer"
+        },
+        "nadpis": {
+          "type": "string"
+        },
+        "picture": {
+          "$ref": "#/definitions/picture"
+        },
+        "misto": {
+          "type": "string"
+        },
+        "vek": {
+          "type": "integer"
+        },
+        "vyska": {
+          "type": "integer"
+        },
+        "vaha": {
+          "type": "integer"
+        },
+        "vzdalenost": {
+          "type": "number"
+        },
+        "status": {
+          "type": "string",
+          "description": "WIP - jeste je mozne, ze zrusime nejake statusy a prevedeme je do jinych, napr app-off",
+          "enum": [
+            "offline",
+            "online",
+            "away",
+            "na",
+            "now",
+            "mobile",
+            "app",
+            "app-off"
+          ]
+        },
+        "certifikovan": {
+          "type": "boolean"
+        },
+        "partnerId": {
+          "type": "number",
+          "description": "null if there is no partner"
+        },
+        "partnerNick": {
+          "type": "string"
+        },
+        "icon_message": {
+          "$ref": "#/definitions/icon"
+        },
+        "icon_visited": {
+          "$ref": "#/definitions/icon"
+        },
+        "icon_plus": {
+          "$ref": "#/definitions/icon"
+        },
+        "geo": {
+          "$ref": "#/definitions/geo"
+        }
+      }
+    },
+    "fullProfile": {
+      "allOf": [
+        {
+          "$ref": "#/definitions/basicProfile"
+        },
+        {
+          "type": "object",
+          "required": [
+            "dynamicProperties"
+          ],
+          "properties": {
+            "dynamicProperties": {
+              "type": "array",
+              "items": {
+                "$ref": "#/definitions/dynamicProperty"
+              }
+            },
+            "pictures": {
+              "type": "array",
+              "items": {
+                "$ref": "#/definitions/picture"
+              }
+            }
+          }
+        }
+      ]
+    },
+    "geo": {
+      "type": "object",
+      "properties": {
+        "lat": {
+          "type": "number",
+          "format": "float"
+        },
+        "lon": {
+          "type": "number",
+          "format": "float"
+        },
+        "address": {
+          "type": "string"
+        }
+      },
+      "required": [
+        "lat",
+        "lon",
+        "address"
+      ]
+    },
+    "conversations": {
+      "type": "array",
+      "items": {
+        "$ref": "#/definitions/message"
+      }
+    },
+    "advertisements": {
+      "type": "array",
+      "items": {
+        "$ref": "#/definitions/advertisement"
+      }
+    },
+    "message": {
+      "type": "object",
+      "required": [
+        "id",
+        "from",
+        "to",
+        "sent",
+        "read",
+        "text",
+        "file",
+        "seen"
+      ],
+      "properties": {
+        "id": {
+          "type": "string"
+        },
+        "from": {
+          "type": "string"
+        },
+        "to": {
+          "type": "string"
+        },
+        "sent": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "read": {
+          "type": "string",
+          "format": "date-time",
+          "description": "might be null"
+        },
+        "text": {
+          "type": "string"
+        },
+        "file": {
+          "$ref": "#/definitions/messageFile"
+        },
+        "seen": {
+          "type": "boolean",
+          "description": "determines if message was possibly seen by receiver, when there is read != null, we can asume reader seen message"
+        }
+      }
+    },
+    "messageFile": {
+      "type": "object",
+      "required": [
+        "name",
+        "url",
+        "previewUrl",
+        "size",
+        "contentType"
+      ],
+      "properties": {
+        "name": {
+          "type": "string"
+        },
+        "url": {
+          "type": "string"
+        },
+        "previewUrl": {
+          "type": "string"
+        },
+        "size": {
+          "type": "integer"
+        },
+        "contentType": {
+          "type": "string",
+          "description": "MIME from uploader's browser. Can be fake"
+        }
+      }
+    },
+    "privateFile": {
+      "allOf": [
+        {
+          "$ref": "#/definitions/messageFile"
+        },
+        {
+          "type": "object",
+          "required": [
+            "id"
+          ],
+          "properties": {
+            "id": {
+              "type": "integer",
+              "format": "int32",
+              "x-mysql-type": "int(11)"
+            }
+          }
+        }
+      ]
+    },
+    "advertisement": {
+      "type": "object",
+      "required": [
+        "type",
+        "targetUrl"
+      ],
+      "properties": {
+        "type": {
+          "enum": [
+            "google",
+            "image"
+          ]
+        },
+        "targetUrl": {
+          "type": "string",
+          "format": "url"
+        },
+        "imageUrl": {
+          "type": "string",
+          "format": "url"
+        },
+        "imageAspectRatio": {
+          "enum": [
+            "1:1",
+            "1:2",
+            "2:1"
+          ]
+        }
+      }
+    },
+    "gallery": {
+      "type": "object",
+      "required": [
+        "name",
+        "password",
+        "id",
+        "locked"
+      ],
+      "properties": {
+        "name": {
+          "type": "string"
+        },
+        "password": {
+          "type": "string",
+          "description": "password is null when user enters none. Show only on user's galleries, otherwise null"
+        },
+        "id": {
+          "type": "string"
+        },
+        "locked": {
+          "type": "boolean",
+          "description": "determines if gallery is locked. Always false on own galleries.",
+          "default": false
+        }
+      }
+    },
+    "photo": {
+      "type": "object",
+      "properties": {
+        "previewUrl": {
+          "type": "string"
+        },
+        "url": {
+          "type": "string"
+        },
+        "id": {
+          "type": "string"
+        },
+        "popis": {
+          "type": "string"
+        },
+        "poradi": {
+          "type": "string"
+        },
+        "bgColor": {
+          "type": "string"
+        },
+        "erotic": {
+          "type": "string"
+        }
+      },
+      "required": [
+        "previewUrl",
+        "url",
+        "id",
+        "popis",
+        "poradi",
+        "bgColor",
+        "erotic"
+      ]
+    },
+    "guestbookEntry": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string"
+        },
+        "odesilatel": {
+          "type": "string"
+        },
+        "prijemce": {
+          "type": "string"
+        },
+        "sent": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "text": {
+          "type": "string"
+        }
+      },
+      "required": [
+        "id",
+        "odesilatel",
+        "prijemce",
+        "sent",
+        "text"
+      ]
+    }
+  }
+}
